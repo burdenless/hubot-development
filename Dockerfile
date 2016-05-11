@@ -1,19 +1,23 @@
 FROM node:latest
+MAINTAINER @byt3smith
 
-MAINTAINER Bobby Argenbright
+RUN npm install -g coffee-script yo generator-hubot  &&  \
+	useradd hubot -m
 
-RUN apt-get -q update
-RUN apt-get -qy install git-core redis-server
+USER hubot
 
-RUN npm install -g yo generator-hubot coffee-script
+WORKDIR /home/hubot
 
-RUN adduser --disabled-password --gecos "" yeoman; \
-  echo "yeoman ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV HOME /home/yeoman
-USER yeoman
-WORKDIR /home/yeoman
+ENV DEV false
 
-RUN git clone https://github.com/byt3smith/hubot-development.git hubot
-RUN cd hubot; npm install
+ENV BOT_NAME "hubot"
+ENV BOT_OWNER "No owner specified"
+ENV BOT_DESC "Hubot with Slack adapter"
 
-CMD cd hubot; bin/hubot --adapter slack
+ENV EXTERNAL_SCRIPTS=hubot-diagnostics,hubot-help,hubot-google-images,hubot-google-translate,hubot-pugme,hubot-maps,hubot-rules,hubot-shipit
+
+RUN yo hubot --owner="$BOT_OWNER" --name="$BOT_NAME" --description="$BOT_DESC" --defaults && \
+	npm install hubot-slack && \
+	npm install hubot-scripts
+
+RUN bin/hubot --adapter slack
