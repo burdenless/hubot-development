@@ -15,11 +15,8 @@ RUN adduser --disabled-password --gecos "" yeoman
 USER yeoman
 WORKDIR /home/yeoman
 
-# Clone the slack adapter
-RUN git clone https://github.com/slackhq/hubot-slack/
-
 # Create hubot
-RUN yo hubot --name hubot --description "Hubot" --adapter slack --defaults
+RUN yo hubot --name hubot-development --description "Hubot" --adapter slack --defaults
 
 # Default command to start hubot
 CMD bin/hubot --adapter slack
